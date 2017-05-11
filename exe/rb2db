@@ -4,10 +4,13 @@ require 'influxdb'
 
 # CONFIG #
 # InfluxDB Server:
-influx_host = ENV['INFLUX_HOST'] || "localhost"
+influx_host = ENV['INFLUX_HOST'] || 'localhost'
+
+# InfluxDB Database:
+influx_db = ENV['INFLUX_DB'] || 'rb2db'
 
 # Local Hostname
-influx_db = ENV['INFLUX_DB'] || `hostname`.strip
+influx_localhost = ENV['INFLUX_LOCALHOST'] || `hostname`.strip
 
 # Create Database for this host if it doesn't already exist
 InfluxDB::Client.new(host: influx_host).create_database(influx_db)
@@ -19,11 +22,12 @@ puts "Logging Started: #{influx_db} => #{influx_host}"
 Process.daemon
 
 while sleep 1
-  influxdb.write_points([
-                          { series: 'cpu_percent',   values: { value: Duffy::System.cpu_percent } },
-                          { series: 'mem_total',     values: { value: Duffy::System.mem_total } },
-                          { series: 'mem_used',      values: { value: Duffy::System.mem_used } },
-                          { series: 'mem_available', values: { value: Duffy::System.mem_available } }
-                        ])
+  data = [
+    { series: 'cpu_percent',   tags: { host: influx_localhost }, values: { value: Duffy::System.cpu_percent } },
+    { series: 'mem_total',     tags: { host: influx_localhost }, values: { value: Duffy::System.mem_total } },
+    { series: 'mem_used',      tags: { host: influx_localhost }, values: { value: Duffy::System.mem_used } },
+    { series: 'mem_available', tags: { host: influx_localhost }, values: { value: Duffy::System.mem_available } }
+  ]
+  influxdb.write_points(data)
 end
 
