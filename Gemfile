@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-gem 'duffy', '>= 0.3.0'
-gem 'influxdb'
+# Specify your gem's dependencies in rb2db.gemspec
+gemspec
