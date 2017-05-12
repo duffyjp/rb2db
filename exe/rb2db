@@ -18,7 +18,7 @@ InfluxDB::Client.new(host: influx_host).create_database(influx_db)
 # Connect to InfluxDB with database for this hostname selected
 influxdb = InfluxDB::Client.new(influx_db, host: influx_host)
 
-puts "Logging Started: #{influx_db} => #{influx_host}"
+puts "Logging Started: #{influx_localhost} => #{influx_host}:#{influx_db}"
 Process.daemon
 
 while sleep 1
