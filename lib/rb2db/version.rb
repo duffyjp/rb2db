@@ -1,8 +1,9 @@
 module Rb2db
-  VERSION = "0.2.1"
+  VERSION = "0.2.2"
 
 
   # CHANGELOG
+  #   0.2.2 "XDG_RUNTIME_DIR" is not well supported.  Let's just use /tmp/
   #   0.2.1 Fix PID file location on linux
   #   0.2.0 Added PID checking to prevent multiple instances.
   #   0.1.4 Replace mem_available with mem_percent.

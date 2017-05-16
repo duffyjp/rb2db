@@ -4,7 +4,7 @@ module Rb2db
   def self.pid_check
 
     # PID file to use.
-    pid_file = (ENV['XDG_RUNTIME_DIR'] || '/tmp') + '/.rb2db.pid'
+    pid_file = '/tmp/.rb2db.pid'
 
     # If the file exists, check if the pid inside is still running
     if (pid = File.file?(pid_file) && File.read(pid_file))
