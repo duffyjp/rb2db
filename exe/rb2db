@@ -1,10 +1,12 @@
 #!/usr/bin/env ruby
 require 'duffy'
 require 'influxdb'
+require_relative "../lib/rb2db.rb"
 
 # CONFIG #
 # InfluxDB Server:
-influx_host = ENV['INFLUX_HOST'] || 'localhost'
+influx_host = ENV['INFLUX_HOST']
+abort('[!] INFLUX_HOST not specified. Bye.') unless influx_host
 
 # InfluxDB Database:
 influx_db = ENV['INFLUX_DB'] || 'rb2db'
@@ -18,16 +20,17 @@ InfluxDB::Client.new(host: influx_host).create_database(influx_db)
 # Connect to InfluxDB with database for this hostname selected
 influxdb = InfluxDB::Client.new(influx_db, host: influx_host)
 
-puts "Logging Started: #{influx_localhost} => #{influx_host}:#{influx_db}"
-Process.daemon
-
-while sleep 1
-  data = [
-    { series: 'cpu_percent',   tags: { host: influx_localhost }, values: { value: Duffy::System.cpu_percent } },
-    { series: 'mem_total',     tags: { host: influx_localhost }, values: { value: Duffy::System.mem_total } },
-    { series: 'mem_used',      tags: { host: influx_localhost }, values: { value: Duffy::System.mem_used } },
-    { series: 'mem_percent',   tags: { host: influx_localhost }, values: { value: Duffy::System.mem_percent } }
-  ]
-  influxdb.write_points(data)
+fork do
+  Rb2db.pid_check
+  while sleep 1
+    data = [
+      { series: 'cpu_percent',   tags: { host: influx_localhost }, values: { value: Duffy::System.cpu_percent } },
+      { series: 'mem_total',     tags: { host: influx_localhost }, values: { value: Duffy::System.mem_total } },
+      { series: 'mem_used',      tags: { host: influx_localhost }, values: { value: Duffy::System.mem_used } },
+      { series: 'mem_percent',   tags: { host: influx_localhost }, values: { value: Duffy::System.mem_percent } }
+    ]
+    influxdb.write_points(data)
+  end
 end
 
+puts "Starting: #{influx_localhost} => #{influx_host}:#{influx_db}"
